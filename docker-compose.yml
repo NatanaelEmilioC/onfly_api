@@ -2,7 +2,7 @@ version: '3'
 
 services:
   database:
-    container_name: wall-app-database-container
+    container_name: onfly-app-database-container
     image: postgres
     ports: 
       - 5432:5432

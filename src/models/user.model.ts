@@ -6,5 +6,11 @@ export class UserModel {
   id: number;
 
   @Column({ length: 191 })
-  description: string;
+  name: string;
+
+  @Column({ length: 191 })
+  email: string;
+
+  @Column({ length: 191 })
+  senha: string;
 }
