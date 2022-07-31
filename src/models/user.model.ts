@@ -12,5 +12,5 @@ export class UserModel {
   email: string;
 
   @Column({ length: 191 })
-  senha: string;
+  password: string;
 }

@@ -11,5 +11,5 @@ export class UserSchema {
 
   @IsString()
   @MaxLength(255)
-  senha: string;
+  password: string;
 }

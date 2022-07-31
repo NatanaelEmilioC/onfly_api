@@ -13,6 +13,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from 'src/models/user.model';
 import { UserSchema } from 'src/schemas/user.schema';
 import { Repository } from 'typeorm/repository/Repository';
+import * as bcrypt from 'bcrypt';
 
 @Controller('/user')
 export class UserController {
@@ -22,7 +23,15 @@ export class UserController {
 
   @Post()
   public async create(@Body() body: UserSchema): Promise<UserModel> {
-    return await this.model.save(body);
+    const user = body;
+    console.log(body.password);
+    user.password = bcrypt.hashSync(body.password, 8);
+    return await this.model.save(user).then(() => {
+      return <UserModel>(<unknown>{
+        status: true,
+        mensagem: 'Usuário cadastrado com sucesso',
+      });
+    });
   }
 
   @Get(':id')
@@ -31,7 +40,9 @@ export class UserController {
   ): Promise<UserModel> {
     const user = await this.model.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException(`Não foi encontrada despesa com o id ${id}`);
+      throw new NotFoundException(
+        `Não foi encontrado nehnhum usuário com o id ${id}`,
+      );
     }
     return user;
   }
@@ -49,7 +60,9 @@ export class UserController {
     const user = await this.model.findOne({ where: { id } });
 
     if (!user) {
-      throw new NotFoundException(`Não foi encontrada despesa com o id ${id}`);
+      throw new NotFoundException(
+        `Não foi encontrado nehnhum usuário com o id ${id}`,
+      );
     }
 
     await this.model.update({ id }, body);
@@ -62,10 +75,12 @@ export class UserController {
     const user = await this.model.findOne({ where: { id } });
 
     if (!user) {
-      throw new NotFoundException(`Não foi encontrada despesa com o id ${id}`);
+      throw new NotFoundException(
+        `Não foi encontrado nehnhum usuário com o id ${id}`,
+      );
     }
 
     await this.model.delete(id);
-    return `A despesa com id ${id} foi removida com sucesso`;
+    return `O usuário com id ${id} foi removido com sucesso`;
   }
 }
