@@ -1,0 +1,7 @@
+{
+    "database": "./database.db",
+    "type": "sqlite",
+    "synchronize": true,
+    "autoLoadEntities": true,
+    "entities": ["dist/**/*.model.ts"]
+}
