@@ -14,12 +14,14 @@ import { ExpenseModel } from 'src/models/expense.model';
 import { UserModel } from 'src/models/user.model';
 import { ExpenseSchema } from 'src/schemas/expense.schema';
 import { Repository } from 'typeorm/repository/Repository';
+import { SendGridService } from '@anchan828/nest-sendgrid';
 
 @Controller('/expense')
 export class ExpenseController {
   constructor(
     @InjectRepository(ExpenseModel) private model: Repository<ExpenseModel>,
     @InjectRepository(UserModel) private userModel: Repository<UserModel>,
+    private readonly sendgrid: SendGridService,
   ) {}
 
   @Post()
@@ -29,13 +31,25 @@ export class ExpenseController {
       where: { id: expense.userId },
     });
 
-    if (user) {
+    if (!user) {
       throw new NotFoundException(
         `Não foi encontrado usuário com o id ${expense.userId}`,
       );
     }
 
-    return await this.model.save(expense);
+    const newExpense = await this.model.save(expense);
+    if (!!newExpense) {
+      const email = {
+        to: user.userEmail,
+        from: process.env.FROM_EMAIL,
+        subject: 'despesa cadastrada',
+        text: `Olá ${user.name} sua despesa foi cadastrada com sucesso`,
+        html: `<strong>Olá ${user.name} sua despesa foi cadastrada com sucesso</strong>`,
+      };
+      await this.sendgrid.send(email);
+    }
+
+    return newExpense;
   }
 
   @Get(':id')
