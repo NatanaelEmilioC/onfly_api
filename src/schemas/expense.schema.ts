@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsDate,
+  IsNotEmpty,
   IsNumber,
   IsPositive,
   IsString,
@@ -18,13 +19,13 @@ export class ExpenseSchema {
   @IsDate()
   @MaxDate(today)
   @Type(() => Date)
+  @IsNotEmpty()
   date: Date;
 
   @IsNumber({ allowInfinity: false, allowNaN: false, maxDecimalPlaces: 0 })
-  @IsPositive()
-  user: number;
+  @IsNotEmpty()
+  userId: number;
 
-  @IsNumber({ allowInfinity: false, allowNaN: false, maxDecimalPlaces: 2 })
   @IsPositive()
   value: number;
 }

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Generated } from 'typeorm';
 
 @Entity()
 export class ExpenseModel {
@@ -12,8 +12,12 @@ export class ExpenseModel {
   date: Date;
 
   @Column('int')
-  user: number;
+  userId: number;
 
   @Column()
   value: number;
+
+  @Column()
+  @Generated('uuid')
+  uuid: string;
 }

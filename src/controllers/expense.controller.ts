@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExpenseModel } from 'src/models/expense.model';
+import { UserModel } from 'src/models/user.model';
 import { ExpenseSchema } from 'src/schemas/expense.schema';
 import { Repository } from 'typeorm/repository/Repository';
 
@@ -18,11 +19,23 @@ import { Repository } from 'typeorm/repository/Repository';
 export class ExpenseController {
   constructor(
     @InjectRepository(ExpenseModel) private model: Repository<ExpenseModel>,
+    @InjectRepository(UserModel) private userModel: Repository<UserModel>,
   ) {}
 
   @Post()
   public async create(@Body() body: ExpenseSchema): Promise<ExpenseModel> {
-    return await this.model.save(body);
+    const expense = body;
+    const user = await this.userModel.findOne({
+      where: { id: expense.userId },
+    });
+
+    if (user) {
+      throw new NotFoundException(
+        `Não foi encontrado usuário com o id ${expense.userId}`,
+      );
+    }
+
+    return await this.model.save(expense);
   }
 
   @Get(':id')

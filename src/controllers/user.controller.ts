@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -24,7 +26,17 @@ export class UserController {
   @Post()
   public async create(@Body() body: UserSchema): Promise<UserModel> {
     const user = body;
-    console.log(body.password);
+    const emailVerify = await this.model.findOne({
+      where: { userEmail: user.userEmail },
+    });
+
+    if (emailVerify) {
+      throw new HttpException(
+        `O email ${user.userEmail} já possui cadastro, favor utilizar outro!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     user.password = bcrypt.hashSync(body.password, 8);
     return await this.model.save(user).then(() => {
       return <UserModel>(<unknown>{
